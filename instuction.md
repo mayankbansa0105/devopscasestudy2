@@ -1,2 +1,76 @@
 Here, I have used 3 components.
-1. configmap - We will create one configmap with file nginx.conf configuration which can be 
+1. configmap - We will create one configmap with file nginx.conf configuration which will be mounted over deployment/pods
+2. Deployment - Here we are creating a deployment with replicacount 1 and image nginx. we are mounting configmap over nginx pod as volume mount at path /etc/nginx path.
+3. service - Here we are creating a nodeport type of service to expose nginx pod.
+This configuration is as same as beow kube conf file:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginxconf
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes  1;
+    events {
+      worker_connections  10240;
+    }
+    http {
+      server {
+          listen       80;
+          server_name  localhost;
+          location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+      app: nginx
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: nginx
+  template:
+    metadata:
+     name: nginx
+     labels:
+       app: nginx
+    spec:
+      containers:
+       - name: nginx
+         image: nginx
+         volumeMounts:
+           - mountPath: /etc/nginx
+             name: nginx
+      volumes:
+        - name: nginx
+          configMap:
+            name: nginxconf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+  namespace: default
+spec:
+  ports:
+  - nodePort: 32170
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+  type: NodePort
+

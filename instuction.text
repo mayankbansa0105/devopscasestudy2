@@ -2,7 +2,7 @@ Here, I have used 3 components.
 1. configmap - We will create one configmap with file nginx.conf configuration which will be mounted over deployment/pods
 2. Deployment - Here we are creating a deployment with replicacount 1 and image nginx. we are mounting configmap over nginx pod as volume mount at path /etc/nginx path.
 3. service - Here we are creating a nodeport type of service to expose nginx pod.
-This configuration is as same as beow kube conf file:
+This configuration is as same as below kube manifest conf file:
 
 apiVersion: v1
 kind: ConfigMap

@@ -25,7 +25,7 @@ data:
         }
       }
     }
----
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -56,7 +56,7 @@ spec:
             items:
               - key: nginx.conf
                 path: nginx.conf
----
+
 apiVersion: v1
 kind: Service
 metadata:
